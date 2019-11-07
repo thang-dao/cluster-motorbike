@@ -22,7 +22,7 @@ class   Motorbike(Dataset):
         if self.transform:
             img = self.transform(img)
                
-        return img
+        return img, self.images[idx]
 
 def get_dataloader(root_dir, batch_size):
     images = os.listdir(root_dir)
@@ -35,33 +35,12 @@ def get_dataloader(root_dir, batch_size):
         ])
     motorbike_dataset = Motorbike(root_dir, images, transform=transform)
     dataloader = DataLoader(motorbike_dataset, batch_size=batch_size, 
-                            shuffle=True, num_workers=4)
+                            shuffle=False, num_workers=4)
     return dataloader
 
 if __name__ == "__main__":
     root_dir = '/home/run/ai_challange/ai_challange/data/moto_data/motobike/1'
     images = os.listdir(root_dir)
-    # for img in images:
-    #     try:
-    #         print(img)
-    #         image = cv2.imread(os.path.join(root_dir, img))
-            
-    #     except:
-    #         with open('wrong_data.txt', 'w') as fp:
-    #             fp.write(str(img))
-    #             print(img)
-    #         fp.close()
-    
-    # input_image = Image.open(filename)
-    # transforms = transforms.Compose([
-    #     transforms.Resize(256),
-    #     transforms.CenterCrop(224),
-    #     transforms.ToTensor(),
-    #     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    #     ])
-    # motorbike_dataset = Motorbike(root_dir, images, transform=transforms)
-    # dataloader = DataLoader(motorbike_dataset, batch_size=16, 
-    #                         shuffle=True, num_workers=4)
     dataloader = get_dataloader(root_dir)
     for i_batch, sample_batched in enumerate(dataloader):
         print(sample_batched.shape)
