@@ -1,14 +1,14 @@
+import argparse
 import torch
 import numpy as np
 from pandas import DataFrame 
 from sklearn.cluster import KMeans
-from Dataloader import *
+from dataloader import *
 from torchvision.models.resnet import resnet18
 from torchvision.models import mobilenet_v2, vgg16
 
 
-def clusers_motor(path_data, model, batch_size=1):
-
+def clusers_motor(path_data, model, nums_cls, batch_size=1):
     model.cuda()
     print(model)
     X = []
@@ -22,7 +22,7 @@ def clusers_motor(path_data, model, batch_size=1):
         image_.append(image_name[0])
         print(resnet_feature.shape)
     X = np.array(X)
-    kmeans = KMeans(n_clusters=10, random_state=0).fit(X)
+    kmeans = KMeans(n_clusters=nums_cls, random_state=0).fit(X)
     motorbike = {'Name': image_, 'Class': kmeans.labels_}
     df = DataFrame(motorbike, columns=['Name', 'Class'])
     export_csv = df.to_csv('./motorbike.csv', index=None)
@@ -30,6 +30,10 @@ def clusers_motor(path_data, model, batch_size=1):
     return export_csv
     
 if __name__ == "__main__":
-    data_path = '/home/vietthangtik15/zalo/motobike'
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data', type=str, default='/home/vietthangtik15/zalo/motobike', help='path to dataset')
+    parser.add_argument('--nums_cls', type=int, default=10, help='number of classes')
+    opt = parser.parse_args()
+    data_path = opt.data
     model = mobilenet_v2(pretrained=True)
-    _csv = clusers_motor(data_path, model)
+    _csv = clusers_motor(data_path, model, nums_cls=opt.nums_cls)
